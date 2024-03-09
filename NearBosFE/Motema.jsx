@@ -2,47 +2,42 @@ if (!state.theme) {
   State.update({
     theme: styled.div`
     font-family: Manrope, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-    ${cssFont}
-    ${css}
 `,
   });
 }
 const Theme = state.theme;
+const sender = Ethers.send("eth_requestAccounts", [])[0];
+const contractAddress = "0x584dA09Cb8570074233812994646746b5D24e0FF";
+const productName = props.productName || "iPhone 14";
 
-const receiver = Ethers.send("eth_requestAccounts", [])[0];
-if (!receiver) { return <Web3Connect />; }
 
-if (state.sender === undefined) {
-  const accounts = Ethers.send("eth_requestAccounts", []);
-  if (accounts.length) {
-    State.update({ sender: accounts[0] });
-    console.log("set sender", State.sender);
-  }
+if (productName.includes("iPhone")) {
+  props.grams = 20;
+} else {
+  props.grams = 10;
 }
 
-const contractAddress = "0x584dA09Cb8570074233812994646746b5D24e0FF";
-const sender = Ethers.send("eth_requestAccounts", [])[0];
+if (!sender) return <Web3Connect connectLabel="Connect Wallet" />;
 
 const handleSend = async () => {
-  const value = 0.05*10000000000000;
+  const value = 0.1634578 * 1000000000000000;
   const valueString = value.toString();
-  console.log('valueString: ' + valueString);
+  //console.log('valueString: ' + valueString);
 
-  const donate = Ethers.send("eth_sendTransaction", [
+  const transactionHash = Ethers.send("eth_sendTransaction", [
     {
       "from": sender, // address of the wallet connected
       "to": contractAddress, // address of pool contract
       "value": valueString // the amount of ether to send to the pool contract
     }
   ]);
-  console.log('donate ' + donate);
+
+  setTimeout(() => {
+    console.log("transactionHash is " + transactionHash);
+  }, 40000);
 
 }
 
-const updateText = (e) => {
-  e.preventDefault()
-  State.update({ text: e.target.value })
-};
 
 const getSender = () => {
   return !state.sender
@@ -81,10 +76,10 @@ return (
           </div>
         </div>
         <span>
-          <p>You just purchased xxx item which contains xxx amount of cobalt!</p>
+          <p>You just purchased {productName} item which contains {props.grams} grams of cobalt!</p>
           <p>Do you want to help reduce the impact of cobalt mining in Democratic Republic of Congo? Donate to the cause!</p>
           <p>The money will be used to support the local communities and help them to find alternative sources of income.</p>
-          <p>You will contribute with xxx amount of ETH</p>
+          <p>You will contribute with 0.1 ETH</p>
         </span>
         <div class="chatbox-input" style={{ padding: '10px' }}>
           <button onClick={handleSend}>Donate</button>
