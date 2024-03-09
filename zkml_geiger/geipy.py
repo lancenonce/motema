@@ -60,6 +60,7 @@ def read_csv_from_flipper():
 # Action function: motema()
 @action
 def motema(address):
+    print("Starting motema flow... 🩵")
     csv_data = read_csv_from_flipper()
     tensor = filter_and_process_data_to_numpy(csv_data)
 
@@ -116,7 +117,7 @@ def motema(address):
                     "status": receipt.status  # 1 for success, 0 for failure
                 }
                 try:
-                    response = requests.post("http://localhost:5000/confirm", json=transaction_data)
+                    response = requests.post("http://localhost:8080/confirm", json=transaction_data)
                     response.raise_for_status()  # Raise an exception for non-2xx status codes
                     print("Transaction confirmation sent to server successfully.")
                 except requests.exceptions.RequestException as e:

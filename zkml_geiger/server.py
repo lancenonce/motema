@@ -1,9 +1,12 @@
 from flask import Flask, request, render_template, Response
 import time
-from zkml_geiger import motema_flow
+import logging
+from geipy import motema
 from prefect.deployments import Deployment
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
+
+logging.basicConfig(level=logging.DEBUG)
 
 @app.route('/')
 def index():
@@ -14,7 +17,7 @@ def start_flow():
     address = request.form.get('address')
     if address:
         deployment = Deployment.build_from_flow(
-            flow=motema_flow,
+            flow=motema,
             name="motema-flow",
             work_queue_name="my-queue",
             parameters={"address": address}
@@ -34,4 +37,4 @@ def stream():
     return Response(event_stream(), mimetype="text/event-stream")
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=8080)
