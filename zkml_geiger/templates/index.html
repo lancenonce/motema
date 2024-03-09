@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Motema Flow</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding-top: 50px;
+      }
+      input[type="text"] {
+        padding: 10px;
+        font-size: 16px;
+        width: 300px;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Motema Flow</h1>
+    <p>Enter your Ethereum address and click "Start" to begin the flow:</p>
+    <input type="text" id="addressInput" placeholder="Enter Ethereum address" />
+    <br /><br />
+    <button id="startButton">Start</button>
+    <div id="transactionStatus"></div>
+
+    <script>
+      const startButton = document.getElementById("startButton");
+      const addressInput = document.getElementById("addressInput");
+      const transactionStatusDiv = document.getElementById("transactionStatus");
+
+      startButton.addEventListener("click", () => {
+        const address = addressInput.value;
+        if (address) {
+          fetch("/start", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: `address=${encodeURIComponent(address)}`,
+          })
+            .then((response) => response.text())
+            .then((data) => {
+              alert(data);
+            })
+            .catch((error) => {
+              alert("An error occurred: " + error);
+            });
+        } else {
+          alert("Please enter an Ethereum address.");
+        }
+      });
+
+      function setupEventSource() {
+        const eventSource = new EventSource("/stream");
+        eventSource.onmessage = (event) => {
+          transactionStatusDiv.textContent = event.data;
+        };
+        eventSource.onerror = (error) => {
+          console.error("EventSource failed:", error);
+        };
+      }
+    </script>
+  </body>
+</html>
