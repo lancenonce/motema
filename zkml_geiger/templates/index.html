@@ -21,6 +21,14 @@
         border: none;
         cursor: pointer;
       }
+      #transactionStatus {
+        margin-top: 20px;
+        font-weight: bold;
+      }
+      #transactionHash {
+        margin-top: 10px;
+        font-size: 14px;
+      }
     </style>
   </head>
   <body>
@@ -30,11 +38,13 @@
     <br /><br />
     <button id="startButton">Start</button>
     <div id="transactionStatus"></div>
+    <div id="transactionHash"></div>
 
     <script>
       const startButton = document.getElementById("startButton");
       const addressInput = document.getElementById("addressInput");
       const transactionStatusDiv = document.getElementById("transactionStatus");
+      const transactionHashDiv = document.getElementById("transactionHash");
 
       startButton.addEventListener("click", () => {
         const address = addressInput.value;
@@ -61,7 +71,8 @@
       function setupEventSource() {
         const eventSource = new EventSource("/stream");
         eventSource.onmessage = (event) => {
-          console.log(event.data);
+          const data = JSON.parse(event.data);
+          console.log(data.message);
         };
         eventSource.onerror = (error) => {
           console.error("EventSource failed:", error);
