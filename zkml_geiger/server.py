@@ -1,8 +1,9 @@
-from flask import Flask, request, render_template, Response
+from flask import Flask, request, render_template, Response, jsonify
 import time
 import logging
-from geipy import motema
-from prefect.deployments import Deployment
+from geipy_no_action import motema
+import asyncio
+import io
 
 app = Flask(__name__, template_folder='templates')
 
@@ -16,13 +17,7 @@ def index():
 def start_flow():
     address = request.form.get('address')
     if address:
-        deployment = Deployment.build_from_flow(
-            flow=motema,
-            name="motema-flow",
-            work_queue_name="my-queue",
-            parameters={"address": address}
-        )
-        deployment.apply()
+        asyncio.run(motema(address))
         return "Flow started successfully"
     else:
         return "Invalid request", 400
@@ -30,11 +25,30 @@ def start_flow():
 @app.route('/stream')
 def stream():
     def event_stream():
+        log_stream = io.StringIO()
+        logging.getLogger().addHandler(logging.StreamHandler(log_stream))
         while True:
-            transaction_status = "Transaction successful!"
-            yield f"data: {transaction_status}\n\n"
-            time.sleep(5)
+            log_contents = log_stream.getvalue()
+            if log_contents:
+                yield f"data: {log_contents}\n\n"
+                log_stream.seek(0)
+                log_stream.truncate(0)
+            time.sleep(1)
     return Response(event_stream(), mimetype="text/event-stream")
+
+@app.route('/confirm', methods=['POST'])
+def confirm_transaction():
+    transaction_data = request.get_json()
+    if transaction_data:
+        address = transaction_data.get('address')
+        transaction_hash = transaction_data.get('transaction_hash')
+        status = transaction_data.get('status')
+        logging.info(f"Transaction confirmation received for address: {address}")
+        logging.info(f"Transaction hash: {transaction_hash}")
+        logging.info(f"Transaction status: {status}")
+        return jsonify({"message": "Transaction confirmation received"}), 200
+    else:
+        return jsonify({"error": "Invalid transaction data"}), 400
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)

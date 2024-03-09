@@ -78,7 +78,7 @@ def motema(address):
     account = import_account(mnemonic)
 
     # Create GizaAgent instance
-    model_id = 429
+    model_id = 430
     version_id = 1
     agent = GizaAgent(id=model_id, version=version_id)
 

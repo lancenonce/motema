@@ -61,12 +61,14 @@
       function setupEventSource() {
         const eventSource = new EventSource("/stream");
         eventSource.onmessage = (event) => {
-          transactionStatusDiv.textContent = event.data;
+          console.log(event.data);
         };
         eventSource.onerror = (error) => {
           console.error("EventSource failed:", error);
         };
       }
+
+      setupEventSource();
     </script>
   </body>
 </html>
