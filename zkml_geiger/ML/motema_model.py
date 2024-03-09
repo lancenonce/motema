@@ -20,10 +20,10 @@ class MotemaModel(nn.Module):
         return above_threshold
 
 # Create an instance of the model
-model = MotemaModel(threshold=0.5)
+model = MotemaModel(threshold=5)
 
 # Example input tensor
-input_tensor = torch.tensor([[-1.0, 2.0, -0.5], [0.1, 0.2, 0.3]])
+input_tensor = torch.tensor([[1.0, 2.0, 8.0], [1.0, 3.0, 3.0]])
 
 # Export the model to ONNX
 output_path = "motema.onnx"
@@ -39,7 +39,7 @@ torch.onnx.export(
     do_constant_folding=True,
     input_names=input_names,
     output_names=output_names,
-    dynamic_axes={'input': {0: 'batch_size'},  # Variable batch size
+    dynamic_axes={'input': {0: 'batch_size'},
                   'output': {0: 'batch_size'}}
 )
 

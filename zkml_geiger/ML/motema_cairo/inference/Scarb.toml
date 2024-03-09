@@ -1,0 +1,12 @@
+[package]
+name = "inference"
+version = "0.1.0"
+edition = "2023_10"
+
+[dependencies]
+_reducemax_axes = { path = "../attributes/_reducemax_axes"} 
+_constant_value = { path = "../attributes/_constant_value"} 
+_constant_1_value = { path = "../attributes/_constant_1_value"} 
+orion = { git = "https://github.com/gizatechxyz/orion.git", rev = "7d84a42" } 
+[lib]
+sierra-text = true
