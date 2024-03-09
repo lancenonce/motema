@@ -6,9 +6,9 @@ import torch
 import requests
 from web3 import Web3
 from pyflipper.pyflipper import PyFlipper
-from giza_actions.action import Action, action
+# from giza_actions.action import Action, action
 from giza_actions.agent import GizaAgent
-from giza_actions.task import task
+# from giza_actions.task import task
 from dotenv import load_dotenv
 from eth_account import Account
 from eth_typing import Address
@@ -20,7 +20,6 @@ def import_account(mnemonic):
     return account
 
 # Read CSV files in `data` folder and process the most recent file reads into a numpy tensor
-@task
 def filter_and_process_data_to_numpy():
     data_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
     csv_files = [f for f in os.listdir(data_dir) if f.endswith('.csv')]
@@ -37,7 +36,6 @@ def filter_and_process_data_to_numpy():
     
     return array
 
-@task
 def read_csv_from_flipper():
     data_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
     os.makedirs(data_dir, exist_ok=True)
@@ -61,7 +59,6 @@ def read_csv_from_flipper():
                     print(f"Saved {file} to {filename}")
 
 # Action function: motema()
-@action
 def motema(address):
     try:
         address = Web3.to_checksum_address(address)
@@ -69,9 +66,12 @@ def motema(address):
         raise ValueError(f"Invalid address format: {e}")
 
     print("Address properly parsed. Starting Motema flow... 🩵")
+    print("Address: ", address)
     read_csv_from_flipper()
     tensor = filter_and_process_data_to_numpy()
     print("Tensor: ", tensor)
+    print("Tensor shape:", tensor.shape)
+    print("Tensor data type:", tensor.dtype)
 
     Account.enable_unaudited_hdwallet_features()
     mnemonic = os.getenv("MNEMONIC")
@@ -83,7 +83,7 @@ def motema(address):
     agent = GizaAgent(id=model_id, version=version_id)
 
     # Run and saveinf erence
-    agent.infer(input_feed=tensor)
+    agent.infer(input_feed={"tensor_input": tensor})
 
     time.sleep(20)
 
@@ -140,7 +140,6 @@ def motema(address):
             raise Exception("It doesn't seem like you've been in the mines.")
     else:
         raise Exception("Proof verification failed.")
-
+    
 if __name__ == '__main__':
-    action_deploy = Action(entrypoint=motema, name="motema-flow")
-    action_deploy.serve(name="motema-flow")
+    motema("0x9567D433240681653fb4DD3E05e08D60fe54210d")

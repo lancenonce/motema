@@ -26,7 +26,7 @@ model = MotemaModel(threshold=5)
 input_tensor = torch.tensor([[1.0, 2.0, 8.0], [1.0, 3.0, 3.0]])
 
 # Export the model to ONNX
-output_path = "motema.onnx"
+output_path = "Motema.onnx"
 input_names = ["input"]
 output_names = ["output"]
 
