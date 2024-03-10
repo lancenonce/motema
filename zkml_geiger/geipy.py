@@ -55,7 +55,7 @@ def read_csv_from_flipper():
         flipper = PyFlipper(com="/dev/cu.usbmodemflip_Anen1x1")
     except Exception as e:
         logger.error(f"No Flipper device found: {e}")
-        return
+        pass
 
     files_and_dirs = flipper.storage.list(path="/ext")
     logger.info(f"Files and directories found on Flipper: {files_and_dirs}")
@@ -102,7 +102,7 @@ async def motema(address):
 
     print("Address properly parsed. Starting Motema flow... 🩵")
     print("Address: ", address)
-    time.sleep(40)
+    time.sleep(20)
 
     read_csv_from_flipper()
     tensor = filter_and_process_data_to_numpy()
@@ -121,18 +121,18 @@ async def motema(address):
     agent = GizaAgent(id=model_id, version=version_id)
 
     # Run and saveinf erence
-    agent.infer(input_feed={"tensor_input": tensor}, job_size="M")
+    agent.infer(input_feed={"tensor_input": tensor}, job_size="XL")
     
     # Get proof
-    # proof, proof_path = agent.get_model_data()
-    with open("zk.proof", "rb") as f:
-        proof = f.read()
-    proof_path = "zk.proof"
+    proof, proof_path = agent.get_model_data()
+    # with open("zk.proof", "rb") as f:
+    #     proof = f.read()
+    # proof_path = "zk.proof"
 
     # Verify proof
-    # verified = await agent.verify(proof_path)
+    verified = await agent.verify(proof_path)
     
-    verified = True
+    # verified = True
     mark = False
 
     if verified:
