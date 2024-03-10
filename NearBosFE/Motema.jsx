@@ -39,25 +39,30 @@ const handleSend = async () => {
 
     setShowModal(true);
 
-    setTimeout(() => {
-      setTransactionHash(donation);
-      console.log("transactionHash is " + transactionHash);
-      setCanClose(true);
-      //setShowModal(false);
-    }, 60000);
-
-  } catch (error) {
-    console.error('Error:', error);
-  }
-  /*
     let checkInterval = setInterval(() => {
-      console.log("Checking transactionHash");
+      console.log("Checking transactionHash", donation);
       if (donation !== null) {
+        setTransactionHash(donation);
         console.log("transactionHash is " + donation);
         setShowModal(false);
         clearInterval(checkInterval);
       }
-    }, 5000);*/
+    }, 3000);
+
+    /*
+    setTimeout(() => {
+      setTransactionHash(donation);
+      console.log("transactionHash is " + transactionHash);
+      //setShowModal(false);
+    }, 60000);
+
+    setTimeout(() => {
+      console.log("Checking transactionHash", donation);
+    }, 3000);*/
+
+  } catch (error) {
+    console.error('Error:', error);
+  }
 
 }
 
@@ -117,6 +122,10 @@ useEffect(() => {
   setTransactionHash(props.transactionHashes);
 }, [props.transactionHashes]);
 */
+
+useEffect(() => {
+  setTransactionHash(props.transactionHashes);
+}, [props.transactionHashes]);
 
 const [dots, setDots] = useState('');
 
@@ -202,14 +211,21 @@ return (
             </span>
             <button onClick={handleSend}>Donate</button>
 
-            <Modal show={showModal} onRequestClose={() => { if (canClose) closeModal(); }} onClose={closeModal} >
+            <Modal show={showModal} onClose={closeModal} >
               <h1 class="text-xl font-bold">Thank You!</h1>
               <div class="h-2 w-20 bg-slate-700"></div>
 
               {!transactionHash ? (
                 <p className="font-bold mt-2">Processing your donation{dots}</p>
               ) : (
-                <p>Transaction Hash: {transactionHash}</p>
+                <>
+                  <p style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    Transaction Hash: {transactionHash}
+                    </p>
+                  <a href={`https://sepolia.etherscan.io/tx/${transactionHash}`} target="_blank">
+                    View on Sepolia Explorer
+                  </a>
+                </>
               )}
             </Modal>
           </>
