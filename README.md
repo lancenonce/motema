@@ -38,16 +38,15 @@ Create a virtual environment and install all the packages found in `requirements
 pyenv activate virtualenv
 pip install -r requirements.txt
 ```
-Finally, run the server, paste your crypto address, and click "start." Make sure you have the right chainid under the `transmit` function in `geipy.py`.
+Finally, run the server:
+```bash
+python zkml_geiger/server.py
+```
+Paste your crypto address, and click "start." Make sure you have the right chainid under the `transmit` function in `geipy.py`.
 
 After start is clicked, check out the console to see the logs of the zkp being proven and the transaction being verified. Remember, we give some time (about 40 seconds) in the beginning of the script for the Geiger counter scan. If you don't have a geiger counter, no worries, we will end up using the files already uploaded in `data`. 
 
-When the txn is done, you'll see the results on the screen:
-
-
-
-
-
+When the txn is done, you'll see the results on the screen.
 The future we want, as human beings, is fair treatment and freedom for all. Our dream is to help Congolese miners pay for their families to eat and for their children to go to school. Cypherpunks write code. This is the future we can build.
 
 ![Let's educate the kids, never exploit them](https://github.com/lancenonce/motema/assets/40670744/1134ea9f-4cf6-46ab-a0d7-57beaa997f2d)
