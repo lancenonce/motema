@@ -1,10 +1,12 @@
 import os
+from datetime import datetime
 import sys
 import time
 import pandas as pd
 import numpy as np
 import asyncio
 import torch
+import logging
 import requests
 from web3 import Web3
 from pyflipper.pyflipper import PyFlipper
@@ -31,42 +33,67 @@ def filter_and_process_data_to_numpy():
     latest_csv = max(csv_files, key=lambda x: os.path.getmtime(os.path.join(data_dir, x)))
     csv_path = os.path.join(data_dir, latest_csv)
     df = pd.read_csv(csv_path)
+    df['cps'] = df['cps'].astype(float)
     cps_values = df['cps'].values
 
     # Find the top 3 values from the cps_values
     top_3_values = np.sort(cps_values)[-3:][::-1]
 
     # Create a NumPy tensor with the top 3 values
-    return_tensor = np.array(top_3_values)
+    return_tensor = np.array(top_3_values, dtype=np.float64)
 
-    # return return_tensor
-    # For some reason this is the only tensor that works. We need to debug this Sunday.
-    return np.random.rand(1,3) * 15
-
+    return return_tensor
 
 def read_csv_from_flipper():
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
+    logger.info("Reading files from Flipper... 📖")
     data_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
     os.makedirs(data_dir, exist_ok=True)
 
     try:
         flipper = PyFlipper(com="/dev/cu.usbmodemflip_Anen1x1")
     except Exception as e:
-        print(f"No Flipper device found: {e}")
-        pass
+        logger.error(f"No Flipper device found: {e}")
+        return
+
+    files_and_dirs = flipper.storage.list(path="/ext")
+    logger.info(f"Files and directories found on Flipper: {files_and_dirs}")
+
+    for file_dict in files_and_dirs.get('files', []):
+        file_name = file_dict['name']
+        file_path = f"/ext/{file_name}"
+        logger.info(f"Reading {file_path} from Flipper...")
+        try:
+            file_data = flipper.storage.read(file=file_path)
+        except Exception as e:
+            logger.error(f"Error reading {file_path}: {e}")
+            continue
+
+        logger.info(f"Read {file_name} from Flipper. Saving to {data_dir}...")
+        filename = os.path.join(data_dir, file_name)
+        try:
+            with open(filename, 'w') as f:
+                f.write(file_data)
+                logger.info(f"Saved {file_name} to {filename}")
+        except Exception as e:
+            logger.error(f"Error saving {file_name} to {filename}: {e}")
+
+    # Find the most recent CSV file
+    csv_files = [f for f in os.listdir(data_dir) if f.endswith('.csv')]
+    if csv_files:
+        most_recent_csv = max(csv_files, key=lambda x: os.path.getmtime(os.path.join(data_dir, x)))
+        logger.info(f"Most recent CSV file: {most_recent_csv}")
+        csv_path = os.path.join(data_dir, most_recent_csv)
+        try:
+            with open(csv_path, 'r') as f:
+                csv_data = f.read()
+                logger.info(f"Contents of {most_recent_csv}:\n{csv_data}")
+        except Exception as e:
+            logger.error(f"Error reading {most_recent_csv}: {e}")
     else:
-        files = flipper.storage.list(path="/ext")
+        logger.info("No CSV files found in the data directory.")
 
-        for file in files:
-            if file.endswith('.csv'):
-                file_path = f"/ext/{file}"
-                csv_data = flipper.storage.read(file=file_path)
-
-                filename = os.path.join(data_dir, file)
-                with open(filename, 'w') as f:
-                    f.write(csv_data)
-                    print(f"Saved {file} to {filename}")
-
-# Action function: motema()
 async def motema(address):
     try:
         address = Web3.to_checksum_address(address)
@@ -75,7 +102,7 @@ async def motema(address):
 
     print("Address properly parsed. Starting Motema flow... 🩵")
     print("Address: ", address)
-    time.sleep(20)
+    time.sleep(5)
 
     read_csv_from_flipper()
     tensor = filter_and_process_data_to_numpy()
@@ -94,7 +121,7 @@ async def motema(address):
     agent = GizaAgent(id=model_id, version=version_id)
 
     # Run and saveinf erence
-    agent.infer(input_feed={"tensor_input": tensor}, job_size="L")
+    agent.infer(input_feed={"tensor_input": tensor}, job_size="M")
     
     # Get proof
     # proof, proof_path = agent.get_model_data()
@@ -112,7 +139,7 @@ async def motema(address):
         print("Proof verified. 🚀")
         # The threshold relu function will set all values less than the threshold to 0
         print("Inference: ", agent.inference)
-        if any(x != 0 for x in agent.inference[0]):
+        if any(x >= 0 for x in agent.inference):
             mark = True
         else:
             pass
