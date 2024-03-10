@@ -42,7 +42,7 @@ Finally, run the server:
 ```bash
 python zkml_geiger/server.py
 ```
-Paste your crypto address, and click "start." Make sure you have the right chainid under the `transmit` function in `geipy.py`.
+The process will be running on `http://127.0.0.1:8080`. Paste your crypto address, and click "start." Make sure you have the right chainid under the `transmit` function in `geipy.py`.
 
 After start is clicked, check out the console to see the logs of the zkp being proven and the transaction being verified. Remember, we give some time (about 40 seconds) in the beginning of the script for the Geiger counter scan. If you don't have a geiger counter, no worries, we will end up using the files already uploaded in `data`. 
 
