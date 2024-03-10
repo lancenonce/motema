@@ -55,7 +55,7 @@ def read_csv_from_flipper():
         flipper = PyFlipper(com="/dev/cu.usbmodemflip_Anen1x1")
     except Exception as e:
         logger.error(f"No Flipper device found: {e}")
-        return
+        pass
 
     files_and_dirs = flipper.storage.list(path="/ext")
     logger.info(f"Files and directories found on Flipper: {files_and_dirs}")
@@ -110,10 +110,14 @@ async def motema(address):
     # print("Tensor shape:", tensor.shape)
     # print("Tensor data type:", tensor.dtype)
 
-    Account.enable_unaudited_hdwallet_features()
-    mnemonic = os.getenv("MNEMONIC")
-    account = import_account(mnemonic)
-    print("Account address: ", account.address)
+    # Account.enable_unaudited_hdwallet_features()
+    # mnemonic = os.getenv("MNEMONIC")
+    # account = import_account(mnemonic)
+    # print("Account address: ", account.address)
+    private_key = os.genenv("PRIVATE_KEY")
+
+    # Create an account object from the private key
+    account = Account.from_key(private_key)
 
     # Create GizaAgent instance
     model_id = 430
@@ -124,15 +128,10 @@ async def motema(address):
     agent.infer(input_feed={"tensor_input": tensor}, job_size="M")
     
     # Get proof
-    # proof, proof_path = agent.get_model_data()
-    with open("zk.proof", "rb") as f:
-        proof = f.read()
-    proof_path = "zk.proof"
+    proof, proof_path = agent.get_model_data()
 
     # Verify proof
-    # verified = await agent.verify(proof_path)
-    
-    verified = True
+    verified = await agent.verify(proof_path)
     mark = False
 
     if verified:
@@ -156,7 +155,7 @@ async def motema(address):
             receipt = await agent.transmit(
                 account=account,
                 contract_address=contract_address,
-                chain_id=11155111,
+                chain_id=11155111, # Replace with Etherlink chainid
                 abi_path="contracts/abi/MotemaPoolAbi.json",
                 function_name="claim",
                 params=[address],
