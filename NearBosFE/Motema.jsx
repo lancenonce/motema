@@ -1,24 +1,12 @@
-const Theme = state.theme;
 const sender = Ethers.send("eth_requestAccounts", [])[0];
-const contractAddress = "0x584dA09Cb8570074233812994646746b5D24e0FF";
+const contractAddress = "0x8030A36c4a063752A0E2Ab9b66410c27E20B153B";
 const productName = props.productName.split("(")[0];
-const [isLoading, setIsLoading] = useState(false);  
+const [isLoading, setIsLoading] = useState(false);
 const [transactionHash, setTransactionHash] = useState(null);
-
-if (!state.theme) {
-  State.update({
-    theme: styled.div`
-    font-family: Manrope, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-    font-weight: bold;
-    background-color: #E0E0E0;
-    color: #0047AB;
-    padding: 10px;
-    border-radius: 0.45rem;
-    border: 3px solid #66CC99;
-  `,
-  });
-}
-
+const message = props.message || `Balance is: `;
+const unit = props.unit || `ETH`;
+const [showModal, setShowModal] = useState(false);
+const [canClose, setCanClose] = useState(false);
 
 if (productName.includes("iPhone")) {
   props.grams = 20;
@@ -39,56 +27,133 @@ if (!sender) return <Web3Connect connectLabel="Connect Wallet" />;
 const handleSend = async () => {
   const value = 0.1634578 * 1000000000000000;
   const valueString = value.toString();
-  //console.log('valueString: ' + valueString);
 
-  const donation = Ethers.send("eth_sendTransaction", [
-    {
-      "from": sender, // address of the wallet connected
-      "to": contractAddress, // address of pool contract
-      "value": valueString // the amount of ether to send to the pool contract
-    }
-  ]);
+  try {
+    const donation = Ethers.send("eth_sendTransaction", [
+      {
+        "from": sender,
+        "to": contractAddress,
+        "value": valueString
+      }
+    ]);
 
-  setIsLoading(true);
-  
-  setTimeout(() => {
-    setTransactionHash(donation);
-    console.log("transactionHash is " + transactionHash);
-  }, 40000);
-  
-  setIsLoading(false);
-/*
-  let checkInterval = setInterval(() => {
-    if (transactionHash !== null) {
+    setShowModal(true);
+
+    setTimeout(() => {
+      setTransactionHash(donation);
       console.log("transactionHash is " + transactionHash);
-      clearInterval(checkInterval);
-    }
-  }, 5000);
-*/
+      setCanClose(true);
+      //setShowModal(false);
+    }, 60000);
+
+  } catch (error) {
+    console.error('Error:', error);
+  }
+  /*
+    let checkInterval = setInterval(() => {
+      console.log("Checking transactionHash");
+      if (donation !== null) {
+        console.log("transactionHash is " + donation);
+        setShowModal(false);
+        clearInterval(checkInterval);
+      }
+    }, 5000);*/
+
 }
 
+function Modal({ onClose, show, children }) {
+  if (!show) {
+    return <></>;
+  }
 
-const getSender = () => {
-  return !state.sender
-    ? ""
-    : state.sender.substring(0, 6) +
-    "..." +
-    state.sender.substring(state.sender.length - 4, state.sender.length);
-};
+  return (
+    <div
+      class="modal-backdrop"
+      style={{
+        position: 'fixed',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: 'rgba(224,224,224,0.3)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+
+        zIndex: 2
+      }}
+      onClick={() => { onClose(); }}
+    >
+      <div
+        class="rounded-2xl px-4 py-4"
+        style={{
+          width: '40%',
+          minHeight: '80px',
+          padding: '20px',
+          color: '#0047AB',
+          backgroundColor: 'rgba(224,224,224)',
+          borderRadius: '0.45rem',
+          border: '3px solid #66CC99',
+          alignItems: 'center',
+        }}
+        onClick={e => { e.stopPropagation(); }}
+      >
+        <div class="rounded-lg bg-lime-300 py-4 px-4 border-2">
+          {children}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/*
+useEffect(() => {
+  if (props.transactionHashes) {
+    setShowModal(true);
+  }
+}, []);
+
+useEffect(() => {
+  setTransactionHash(props.transactionHashes);
+}, [props.transactionHashes]);
+*/
+
+const [dots, setDots] = useState('');
+
+useEffect(() => {
+  const intervalId = setInterval(() => { setDots((prevDots) => (prevDots.length < 3 ? prevDots + '.' : '')); }, 700);
+  return () => clearInterval(intervalId);
+}, []);
+
+const closeModal = () => {
+  setShowModal(false);
+}
 
 const prettyAddress = (address) => {
   const string = address.substring(0, 2) + "..." + address.substring(address.length - 4, address.length);
   return string
 }
 
-const message = props.message || `Balance is: `;
-const unit = props.unit || `ETH`;
-
 if (state.balance === undefined && sender) {
   Ethers.provider().getBalance(sender).then((balance) => {
     State.update({ balance: Big(balance).div(Big(10).pow(18)).toFixed(2) });
   });
 }
+
+if (!state.theme) {
+  State.update({
+    theme: styled.div`
+    font-family: Manrope, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+    font-weight: bold;
+    background-color: #E0E0E0;
+    color: #0047AB;
+    padding: 10px;
+    border-radius: 0.45rem;
+    border: 3px solid #66CC99;
+  `,
+  });
+}
+const Theme = state.theme;
 
 const Navbar = styled.div`
   display: flex;
@@ -109,7 +174,7 @@ const RightSide = styled.div`
 return (
   <Theme>
     <div class="main-container">
-    <Navbar></Navbar>
+      <Navbar><img src="https://i.ibb.co/VD1Gsd7/motema-banner.png" alt="Motema Banner"></img></Navbar>
       <div class="header">
         <Navbar>
           <LeftSide>
@@ -126,7 +191,7 @@ return (
           </RightSide>
         </Navbar>
       </div>
-      <div>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
         {props.grams && productName ? (
           <>
             <span>
@@ -135,9 +200,18 @@ return (
               <p>The money will be used to support the local communities and help them to find alternative sources of income.</p>
               <p>You will contribute with 0.1 ETH</p>
             </span>
-            <div class="chatbox-input" style={{ padding: '10px' }}>
-              <button onClick={handleSend}>Donate</button>
-            </div>
+            <button onClick={handleSend}>Donate</button>
+
+            <Modal show={showModal} onRequestClose={() => { if (canClose) closeModal(); }} onClose={closeModal} >
+              <h1 class="text-xl font-bold">Thank You!</h1>
+              <div class="h-2 w-20 bg-slate-700"></div>
+
+              {!transactionHash ? (
+                <p className="font-bold mt-2">Processing your donation{dots}</p>
+              ) : (
+                <p>Transaction Hash: {transactionHash}</p>
+              )}
+            </Modal>
           </>
         ) : (
           <span>
@@ -145,14 +219,6 @@ return (
             <p>Your purchase is cobalt free, thank you for caring!</p>
           </span>
         )}
-
-        {transactionHash && (
-          <div>
-            <p>Transaction Hash: {transactionHash}</p>
-            <p>Thank you for your donation!</p>
-          </div>
-        )}
-
       </div>
     </div>
   </Theme>
