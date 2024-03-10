@@ -1,0 +1,70 @@
+.font-bold {
+    font-weight: bold;
+}
+
+.mb-10 {
+    margin-bottom: 10px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+a, a:visited {
+    color: blue;
+}
+
+.mt-10 {
+    margin-top: 10px;
+}
+
+.mt-5 {
+    margin-top: 5px;
+}
+
+.btn {
+    cursor: pointer;
+    display: inline-block;
+    background-color: #007efd;
+    color: white;
+    outline: 0;
+    border: 2px solid #0071e4;
+    border-radius: 0.25rem;
+    font-weight: bold;
+}
+
+.btn:hover {
+    background-color: #0065ca;
+    border: 2px solid #0058b2;
+}
+
+.btn:active {
+    outline: 0;
+    background-color: #003f7f;
+}
+
+.task {
+    opacity: 0.5;
+}
+
+.task:hover {
+    opacity: 1;
+}
+
+#detach-icon {
+    width: 8px;
+    height: 8px;
+    margin-left: 5px;
+}
+
+#detach-icon:hover {
+    cursor: pointer;
+}
+
+.text-red {
+    color:#FF0000;
+}
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
