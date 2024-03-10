@@ -1,40 +1,29 @@
-from flask import Flask, request, render_template, Response
-import time
-import logging
+from flask import Flask, request, render_template, jsonify
+import asyncio
 from geipy import motema
-from prefect.deployments import Deployment
 
 app = Flask(__name__, template_folder='templates')
 
-logging.basicConfig(level=logging.DEBUG)
-
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
+    if request.method == 'POST':
+        address = request.form.get('address')
+        if address:
+            try:
+                receipt = asyncio.run(motema(address))
+                if receipt is None:
+                    return jsonify({'error': 'No receipt received'}), 500
+                transaction_data = {
+                    "address": str(address),
+                    "transaction_hash": receipt.transactionHash.hex(),
+                    "status": receipt.status
+                }
+                return jsonify(transaction_data), 200
+            except Exception as e:
+                return jsonify({'error': str(e)}), 500
+        else:
+            return jsonify({'error': 'Invalid request'}), 400
     return render_template('index.html')
-
-@app.route('/start', methods=['POST'])
-def start_flow():
-    address = request.form.get('address')
-    if address:
-        deployment = Deployment.build_from_flow(
-            flow=motema,
-            name="motema-flow",
-            work_queue_name="my-queue",
-            parameters={"address": address}
-        )
-        deployment.apply()
-        return "Flow started successfully"
-    else:
-        return "Invalid request", 400
-
-@app.route('/stream')
-def stream():
-    def event_stream():
-        while True:
-            transaction_status = "Transaction successful!"
-            yield f"data: {transaction_status}\n\n"
-            time.sleep(5)
-    return Response(event_stream(), mimetype="text/event-stream")
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)

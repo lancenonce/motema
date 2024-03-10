@@ -1,0 +1,11 @@
+Deployer: 0xEbeD10f21F32E7F327F8B923257c1b6EceD857b7
+Deployed to: 0x9D99Ba13cCC42d76819c6F748B00AD78F2fA3353
+Transaction hash: 0x8106f1f42ba6aa92bea980287fa320ac877c04277c0501c0c89e193264daef76
+
+Deployer: 0xEbeD10f21F32E7F327F8B923257c1b6EceD857b7
+Deployed to: 0x8030A36c4a063752A0E2Ab9b66410c27E20B153B
+Transaction hash: 0xebadecfa42892782cba44ba8282c88b6817f63f87ebbecdbd11cbb79154eaae3
+
+		(bool success, ) = _addr.call.value(msg.value)("");
+
+0xa25347e4fd683dA05C849760b753a4014265254e
