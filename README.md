@@ -5,26 +5,6 @@ The inspiration for this project arises from the unfair treatment and compensati
 
 # 🩵🇨🇩❤️
 
-## What is Motema?
-Motema is an efficient method for Congolese miners to get paid more for their work. There are two sides: the consumer / donator and the miner.
-
-#### Consumer
-Under the `NearBosFE` and `motema_extension` directories, you will find a Chrome extention that scrapes web results for products that use cobalt and computes an (hacky) estimate of how much of the metal was used in the product.
-This amount is converted to ETH, and a donation page pops up prompting the user to donate ETH to the miners that extracted the cobalt in their product. The ETH goes to the MotemaPool contract under `contracts`
-
-#### Miner
-This is where the zkml is used. We have to somehow prove that a miner actually is a miner. Unfortunately, many people, even children, enter mines in an aim to earn more income. Therefore official miners aren't the only ones who deserve compensation.
-Theoretically, we'd set up a station outside the large mining areas, and allow people to claim using an address to their crypto wallet (perhaps in the future we'll use account abstraction for this). In order to claim, they undergo a body scan with a geiger counter.
-The reason we use a geiger counter is due to the Uranium traces found in cobalt mines. The people who enter often mine with their raw hands, exposing themselves to radiation. We detect the radiation, then use a [Giza Action](https://actions.gizatech.xyz/welcome/giza-actions-sdk) to read the data from the Geiger counter, run it through a Cairo program that determines if their radiation exposure is above the threshold, and generates a proof
-Due to the prohibitive cost of proving Cairo proofs directly on L1 (in our case, Etherlink w/ Tezos), instead of verifying the proof on-chain, we verify it with the Giza CLI, then sign the proof, attesting that the user generated the proof in question.
-After the proof and signature are verified, we call the `claim` function in our `MotemaPool` contract, sending the miner some ETH for their work.
-
-## Assumptions
-We know this isn't a fool-proof concept, and would like to highlight some key assumptions:
-- The data coming from the geiger counter isn't proven, because the geiger counter in use doesn't have a microprocessor. It would be nice to sign the raw geiger data, but alas, you need to trust us to use the proper inputs. See `zkml_geiger/geipy.py` to see how we fetch the CSV files from the flipper zero connected to the geiger counter and process them as numpy arrays for our ML model
-- We don't want to incentivize radiation exposure. The incentives in the Congo are already corrupted due to the natural resources there. We don't want to incentivize the community to mine more because they get paid more. Our goal is to compensate them so they can send their children to school, live better lives, and take control of their raw material supply chains
-- We don't prove the zkp on-chain, for computational efficiency, we prove it off-chain, then sign it. This is the key feature of the Giza Agent. In the future, when STARKs are easier to verify on-chain, we will use them
-
 ## Building the project
 Download the chrome extension in `motema_extension`. Go to `Manage extensions` in your browser, Developer Mode, Load Unpacked, and upload the file. 
 
@@ -48,6 +28,26 @@ After start is clicked, check out the console to see the logs of the zkp being p
 
 When the txn is done, you'll see the results on the screen:
 <img width="1157" alt="Screenshot 2024-03-10 at 5 32 11 PM" src="https://github.com/lancenonce/motema/assets/40670744/6aeaf199-64ca-49a3-b781-8ff0a3be7b97">
+
+## Motema details
+Motema is an efficient method for Congolese miners to get paid more for their work. There are two sides: the consumer / donator and the miner.
+
+#### Consumer
+Under the `NearBosFE` and `motema_extension` directories, you will find a Chrome extention that scrapes web results for products that use cobalt and computes an (hacky) estimate of how much of the metal was used in the product.
+This amount is converted to ETH, and a donation page pops up prompting the user to donate ETH to the miners that extracted the cobalt in their product. The ETH goes to the MotemaPool contract under `contracts`
+
+#### Miner
+This is where the zkml is used. We have to somehow prove that a miner actually is a miner. Unfortunately, many people, even children, enter mines in an aim to earn more income. Therefore official miners aren't the only ones who deserve compensation.
+Theoretically, we'd set up a station outside the large mining areas, and allow people to claim using an address to their crypto wallet (perhaps in the future we'll use account abstraction for this). In order to claim, they undergo a body scan with a geiger counter.
+The reason we use a geiger counter is due to the Uranium traces found in cobalt mines. The people who enter often mine with their raw hands, exposing themselves to radiation. We detect the radiation, then use a [Giza Action](https://actions.gizatech.xyz/welcome/giza-actions-sdk) to read the data from the Geiger counter, run it through a Cairo program that determines if their radiation exposure is above the threshold, and generates a proof
+Due to the prohibitive cost of proving Cairo proofs directly on L1 (in our case, Etherlink w/ Tezos), instead of verifying the proof on-chain, we verify it with the Giza CLI, then sign the proof, attesting that the user generated the proof in question.
+After the proof and signature are verified, we call the `claim` function in our `MotemaPool` contract, sending the miner some ETH for their work.
+
+## Assumptions
+We know this isn't a fool-proof concept, and would like to highlight some key assumptions:
+- The data coming from the geiger counter isn't proven, because the geiger counter in use doesn't have a microprocessor. It would be nice to sign the raw geiger data, but alas, you need to trust us to use the proper inputs. See `zkml_geiger/geipy.py` to see how we fetch the CSV files from the flipper zero connected to the geiger counter and process them as numpy arrays for our ML model
+- We don't want to incentivize radiation exposure. The incentives in the Congo are already corrupted due to the natural resources there. We don't want to incentivize the community to mine more because they get paid more. Our goal is to compensate them so they can send their children to school, live better lives, and take control of their raw material supply chains
+- We don't prove the zkp on-chain, for computational efficiency, we prove it off-chain, then sign it. This is the key feature of the Giza Agent. In the future, when STARKs are easier to verify on-chain, we will use them
 
 The future we want, as human beings, is fair treatment and freedom for all. Our dream is to help Congolese miners pay for their families to eat and for their children to go to school. Cypherpunks write code. This is the future we can build.
 
