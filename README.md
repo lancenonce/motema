@@ -46,7 +46,9 @@ The process will be running on `http://127.0.0.1:8080`. Paste your crypto addres
 
 After start is clicked, check out the console to see the logs of the zkp being proven and the transaction being verified. Remember, we give some time (about 40 seconds) in the beginning of the script for the Geiger counter scan. If you don't have a geiger counter, no worries, we will end up using the files already uploaded in `data`. 
 
-When the txn is done, you'll see the results on the screen.
+When the txn is done, you'll see the results on the screen:
+<img width="1157" alt="Screenshot 2024-03-10 at 5 32 11 PM" src="https://github.com/lancenonce/motema/assets/40670744/6aeaf199-64ca-49a3-b781-8ff0a3be7b97">
+
 The future we want, as human beings, is fair treatment and freedom for all. Our dream is to help Congolese miners pay for their families to eat and for their children to go to school. Cypherpunks write code. This is the future we can build.
 
 ![Let's educate the kids, never exploit them](https://github.com/lancenonce/motema/assets/40670744/1134ea9f-4cf6-46ab-a0d7-57beaa997f2d)
