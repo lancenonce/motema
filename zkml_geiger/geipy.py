@@ -102,7 +102,7 @@ async def motema(address):
 
     print("Address properly parsed. Starting Motema flow... 🩵")
     print("Address: ", address)
-    time.sleep(5)
+    time.sleep(40)
 
     read_csv_from_flipper()
     tensor = filter_and_process_data_to_numpy()
