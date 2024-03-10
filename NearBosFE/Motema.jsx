@@ -1,3 +1,10 @@
+const Theme = state.theme;
+const sender = Ethers.send("eth_requestAccounts", [])[0];
+const contractAddress = "0x584dA09Cb8570074233812994646746b5D24e0FF";
+const productName = props.productName.split("(")[0];
+const [isLoading, setIsLoading] = useState(false);  
+const [transactionHash, setTransactionHash] = useState(null);
+
 if (!state.theme) {
   State.update({
     theme: styled.div`
@@ -11,10 +18,6 @@ if (!state.theme) {
   `,
   });
 }
-const Theme = state.theme;
-const sender = Ethers.send("eth_requestAccounts", [])[0];
-const contractAddress = "0x584dA09Cb8570074233812994646746b5D24e0FF";
-const productName = props.productName.split("(")[0];
 
 
 if (productName.includes("iPhone")) {
@@ -38,7 +41,7 @@ const handleSend = async () => {
   const valueString = value.toString();
   //console.log('valueString: ' + valueString);
 
-  const transactionHash = Ethers.send("eth_sendTransaction", [
+  const donation = Ethers.send("eth_sendTransaction", [
     {
       "from": sender, // address of the wallet connected
       "to": contractAddress, // address of pool contract
@@ -46,19 +49,22 @@ const handleSend = async () => {
     }
   ]);
 
-  /*
+  setIsLoading(true);
+  
   setTimeout(() => {
+    setTransactionHash(donation);
     console.log("transactionHash is " + transactionHash);
   }, 40000);
-  */
-
+  
+  setIsLoading(false);
+/*
   let checkInterval = setInterval(() => {
     if (transactionHash !== null) {
       console.log("transactionHash is " + transactionHash);
       clearInterval(checkInterval);
     }
   }, 5000);
-
+*/
 }
 
 
@@ -103,21 +109,22 @@ const RightSide = styled.div`
 return (
   <Theme>
     <div class="main-container">
+    <Navbar></Navbar>
       <div class="header">
-      <Navbar>
-  <LeftSide>
-    {sender ? (<>{prettyAddress(sender)}</>) : ('')}
-    {message} {state.balance} {unit}
-  </LeftSide>
-  <RightSide>
-    <Web3Connect
-      className="styled.div"
-      connectLabel="Connect"
-      disconnectLabel="Disconnect"
-      connectingLabel="Connecting..."
-    />
-  </RightSide>
-</Navbar>
+        <Navbar>
+          <LeftSide>
+            {sender ? (<>{prettyAddress(sender)}</>) : ('')}
+            {message} {state.balance} {unit}
+          </LeftSide>
+          <RightSide>
+            <Web3Connect
+              className="styled.div"
+              connectLabel="Connect"
+              disconnectLabel="Disconnect"
+              connectingLabel="Connecting..."
+            />
+          </RightSide>
+        </Navbar>
       </div>
       <div>
         {props.grams && productName ? (
@@ -138,6 +145,14 @@ return (
             <p>Your purchase is cobalt free, thank you for caring!</p>
           </span>
         )}
+
+        {transactionHash && (
+          <div>
+            <p>Transaction Hash: {transactionHash}</p>
+            <p>Thank you for your donation!</p>
+          </div>
+        )}
+
       </div>
     </div>
   </Theme>
