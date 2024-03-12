@@ -8,7 +8,9 @@ The inspiration for this project arises from the unfair treatment and compensati
 ## Building the project
 Download the chrome extension in `motema_extension`. Go to `Manage extensions` in your browser, Developer Mode, Load Unpacked, and upload the file. 
 
-Test the extension by searching for an Apple product on Amazon.
+Test the extension by searching for an Apple product on Amazon. After you donate and send the transaction, you will see a confirmation screen:
+![telegram-cloud-photo-size-4-6015053444546674113-y](https://github.com/lancenonce/motema/assets/40670744/367539fc-e768-4557-8d21-e5db9637474e)
+
 
 Then, clone the repository and find the `.env.example` file under the `zkml_geiger` directory. Copy this and fill in the values.
 
