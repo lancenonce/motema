@@ -1,7 +1,7 @@
 ![Motema banner](https://github.com/lancenonce/motema/assets/40670744/418b2e48-6e76-4878-a452-4718e7142bc8)
 
 # Motema: the ZKML Geiger Counter
-The inspiration for this project arises from the unfair treatment and compensation of Congolese miners who enable us to live in the tech-driven world we enjoy today. Wishing the Democratic Republic of Congo peace, prosperity, and health. 
+This project was built for the ETH Oxford 2024 hackathon. The inspiration for this project arises from the unfair treatment and compensation of Congolese miners who enable us to live in the tech-driven world we enjoy today. Wishing the Democratic Republic of Congo peace, prosperity, and health. 
 
 # 🩵🇨🇩❤️
 
